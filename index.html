@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>팀 점수 계산기</title>
+    <style>
+        /* 기본 스타일 설정 */
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background-color: #f9f9f9;
+            margin: 0;
+            padding: 1rem;
+        }
+        
+        h1 {
+            color: #333;
+            font-size: 2rem;
+            margin-bottom: 1.5rem;
+        }
+
+        table {
+            width: 100%;
+            max-width: 50rem;
+            border-collapse: collapse;
+            margin-bottom: 1rem;
+            background-color: #fff;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            overflow: hidden;
+            font-size:1.3rem;
+        }
+
+        th, td {
+            padding: 1rem;
+            text-align: center;
+            border-bottom: 1px solid #eee;
+        }
+
+        th {
+            background-color: #4CAF50;
+            color: white;
+            font-weight: 600;
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        input[type="text"], input[type="number"] {
+            width: 90%;
+            padding: 0.5rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+            font-size: 1.1rem;
+        }
+
+        input[type="number"]:focus, input[type="text"]:focus {
+            outline: none;
+            border-color: #4CAF50;
+        }
+
+        p {
+            font-size: 1.3rem;
+            color: #555;
+        }
+
+        #total-score, #remaining-points {
+            font-weight: bold;
+        }
+        .score{
+            font-size: 1.8rem;
+        }
+        button {
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            font-size: 1.6rem;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            margin-top: 10px;
+        }
+
+        button:hover {
+            background-color: #45A049;
+        }
+        button:active {
+            background-color: #3e8e41;
+        }
+    </style>
+</head>
+<body>
+    <h1>멸망전 점수 계산기 (175점)</h1>
+    <table>
+        <tr>
+            <th>라인</th>
+            <th>이름</th>
+            <th>점수</th>
+        </tr>
+        <tr>
+            <td>탑</td>
+            <td><input type="text" id="top-name" placeholder="플레이어 이름"></td>
+            <td><input type="number" step="0.01" id="top-score" oninput="updateScores()"></td>
+        </tr>
+        <tr>
+            <td>정글</td>
+            <td><input type="text" id="jungle-name" placeholder="플레이어 이름"></td>
+            <td><input type="number" step="0.01" id="jungle-score" oninput="updateScores()"></td>
+        </tr>
+        <tr>
+            <td>미드</td>
+            <td><input type="text" id="mid-name" placeholder="플레이어 이름"></td>
+            <td><input type="number" step="0.01" id="mid-score" oninput="updateScores()"></td>
+        </tr>
+        <tr>
+            <td>원딜</td>
+            <td><input type="text" id="adcarry-name" placeholder="플레이어 이름"></td>
+            <td><input type="number" step="0.01" id="adcarry-score" oninput="updateScores()"></td>
+        </tr>
+        <tr>
+            <td>서폿</td>
+            <td><input type="text" id="support-name" placeholder="플레이어 이름"></td>
+            <td><input type="number" step="0.01" id="support-score" oninput="updateScores()"></td>
+        </tr>
+        <tr>
+            <td>3챌 패널티</td>
+            <td>-</td>
+            <td><input type="number" step="0.01" id="penalty-score" oninput="updateScores()"></td>
+        </tr>
+    </table>
+    <p>총점: <span id="total-score" class="score">0</span></p>
+    <p>남은 점수: <span id="remaining-points" class="score">175</span></p>
+    <button onclick="shareURL()">공유하기</button>
+
+    <script>
+        function updateScores() {
+            const maxPoints = 175;
+            const scores = [
+                parseFloat(document.getElementById("top-score").value) || 0,
+                parseFloat(document.getElementById("jungle-score").value) || 0,
+                parseFloat(document.getElementById("mid-score").value) || 0,
+                parseFloat(document.getElementById("adcarry-score").value) || 0,
+                parseFloat(document.getElementById("support-score").value) || 0,
+                parseFloat(document.getElementById("penalty-score").value) || 0,
+            ];
+            const totalScore = scores.reduce((a, b) => a + b, 0);
+            const remainingPoints = maxPoints - totalScore;
+
+            document.getElementById("total-score").innerText = totalScore.toFixed(2);
+            document.getElementById("remaining-points").innerText = remainingPoints.toFixed(2);
+
+            const totalScoreElement = document.getElementById("total-score");
+            const remainingElement = document.getElementById("remaining-points");
+            if (totalScore > maxPoints) {
+                totalScoreElement.style.color="#dd1818"
+                remainingElement.style.color="#dd1818"
+            } else {
+                totalScoreElement.style.color="#333"
+                remainingElement.style.color="#333"
+            }
+        }
+
+        function shareURL() {
+            const params = new URLSearchParams();
+            params.set("top", document.getElementById("top-score").value);
+            params.set("jungle", document.getElementById("jungle-score").value);
+            params.set("mid", document.getElementById("mid-score").value);
+            params.set("adcarry", document.getElementById("adcarry-score").value);
+            params.set("support", document.getElementById("support-score").value);
+            params.set("penalty", document.getElementById("penalty-score").value);
+            
+            params.set("top-name", document.getElementById("top-name").value);
+            params.set("jungle-name", document.getElementById("jungle-name").value);
+            params.set("mid-name", document.getElementById("mid-name").value);
+            params.set("adcarry-name", document.getElementById("adcarry-name").value);
+            params.set("support-name", document.getElementById("support-name").value);
+            const url = `${window.location.origin}${window.location.pathname}?${params.toString()}`;
+            navigator.clipboard.writeText(url).then(() => {
+                alert("URL이 클립보드에 복사되었습니다!");
+            });
+        }
+
+        function loadFromURL() {
+            const params = new URLSearchParams(window.location.search);
+            document.getElementById("top-score").value = params.get("top") || "";
+            document.getElementById("jungle-score").value = params.get("jungle") || "";
+            document.getElementById("mid-score").value = params.get("mid") || "";
+            document.getElementById("adcarry-score").value = params.get("adcarry") || "";
+            document.getElementById("support-score").value = params.get("support") || "";
+            document.getElementById("penalty-score").value = params.get("penalty") || "";
+
+            document.getElementById("top-name").value = params.get("top-name") || "";
+            document.getElementById("jungle-name").value = params.get("jungle-name") || "";
+            document.getElementById("mid-name").value = params.get("mid-name") || "";
+            document.getElementById("adcarry-name").value = params.get("adcarry-name") || "";
+            document.getElementById("support-name").value = params.get("support-name") || "";
+
+            updateScores();  // 값을 로드한 후 총점 및 남은 점수 업데이트
+        }
+
+        window.onload = loadFromURL;  // 페이지가 로드될 때 URL에서 값 불러오기
+    </script>
+</body>
+</html>
